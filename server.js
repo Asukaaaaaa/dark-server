@@ -4,17 +4,69 @@ const { db } = require('./data')
 
 const app = express()
 
+// 跨域
+app.all('*', (req, res, next) => {
+    res.header('Access-Control-Allow-Origin', '*')
+    next()
+})
+
 // 静态资源
 app.use('/static', express.static(__dirname + '/static'))
 
 // 数据接口
 
+app.all('*', (req, res, next) => {
+    res.set('content-type', 'application/json')
+    next()
+})
+
+app.get('/user/login', (req, res) => {
+    const uid = db.insert('/user', req.query)
+    res.send({ uid })
+})
+
+app.get('/get', (req, res) => {
+    const { path, type } = req.query
+    let data = db.get(path)
+    switch (type) {
+        case 'layer':
+            /*
+            let arr = []
+            for (let attr in data)
+                arr.push(attr)
+            data = arr
+            */
+            break
+        default:
+            break
+    }
+    res.send(data)
+})
+
+app.get('/set', (req, res) => {
+    const { path, val } = req.query
+    res.send(db.set(path, JSON.parse(val)))
+})
+
+app.get('/insert', (req, res) => {
+    const { path, val } = req.query
+    res.send('' + db.insert(path, JSON.parse(val)))
+})
 
 // 管理
 app.get('/manage', (req, res) => {
     res.redirect('/static/manage/index.html')
 })
 
+
+app.all('/manage/init', (req, res) => {
+    db.init()
+    res.end()
+})
+app.all('/manage/save', (req, res) => {
+    db.save()
+    res.end()
+})
 
 //
 app.listen(80, () => {

@@ -35,6 +35,10 @@
             margin-block-end: 0;
             font-size: 0.9em;
             margin-left: 1em;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: block;
         }
 
         .tag>div {
@@ -56,6 +60,9 @@
             padding: 0;
             position: relative;
             top: 1px;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 1em;
+            width: calc(100% - 200px);
         }
     </style>
 </head>
@@ -93,12 +100,37 @@
         document.onmousedown = e => {
             e.target !== window.crtInput && e.preventDefault()
         }
+
+        const parseCmd = cmd => {
+            cmd = cmd.split(' ')
+            const prefix = 'http://localhost/'
+            switch (cmd[0]) {
+                case 'ls':
+                    return prefix + `get?path=${cmd[1]}&type=layer`
+                    break
+                case 'set':
+                    return prefix + `set?path=${cmd[1]}&val=${cmd[2]}`
+                    break
+                case 'insert':
+                    return prefix + `insert?path=${cmd[1]}&val=${cmd[2]}`
+                    break
+                default:
+                    break
+            }
+        }
         input.onchange = e => {
             const val = e.target.value
+            fetch(parseCmd(val))
+                .then(res => res.json())
+                .then(json => {
+                    const ps = []
+                    for (let attr in json) {
+                        ps.push(Body(attr + ` : ${json[attr]}`))
+                    }
+                    history.unshift({ val, ps })
+                })
             // TODO
-            const ps = [Body(val)]
             history[0] && history[0].ps.forEach(p => p.remove())
-            history.unshift({ val, ps })
         }
         document.onkeydown = (function () {
             const f = i => {
@@ -109,7 +141,7 @@
             }
             const methods = {
                 ArrowUp: () => {
-                    history.ptr < (history.length - 1) && f(history.ptr + 1)    
+                    history.ptr < (history.length - 1) && f(history.ptr + 1)
                 },
                 ArrowDown: () => {
                     history.ptr > 0 && f(history.ptr - 1)
