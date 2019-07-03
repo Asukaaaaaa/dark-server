@@ -1,6 +1,7 @@
 const express = require('express')
 
 const { db } = require('./data')
+db.init()
 
 const app = express()
 

@@ -50,10 +50,16 @@ const db = new (function () {
 
     // 
     this.init = () => {
-        fs.readFile('data.json', (e, data) => {
-            Object.assign(this.data, JSON.parse(data))
+        fs.readFile('data.json', 'utf8', (e, data) => {
+            const json = JSON.parse(data)
+            for (let attr in json) {
+                for (let val of json[attr]) {
+                    this.data.user.push(val)
+                }
+            }
         })
     }
+
     this.save = () => {
         fs.writeFile('data.json', JSON.stringify(this.data), console.log)
     }
