@@ -15,12 +15,6 @@ app.all('*', (req, res, next) => {
 app.use('/static', express.static(__dirname + '/static'))
 
 // 数据接口
-
-app.all('*', (req, res, next) => {
-    res.set('content-type', 'application/json')
-    next()
-})
-
 app.get('/user/login', (req, res) => {
     const uid = db.insert('/user', req.query)
     res.send({ uid })

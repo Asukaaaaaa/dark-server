@@ -2,11 +2,17 @@
     "user": [
         {
             "nickName": "佟Dark为",
-            "avatarUrl": "http://localhost/static/img/00.png"
+            "avatarUrl": "http://localhost/static/img/00.png",
+            "friends": [
+                1
+            ]
         },
         {
             "nickName": "🍌",
-            "avatarUrl": "http://localhost/static/img/02.png"
+            "avatarUrl": "http://localhost/static/img/02.png",
+            "friends": [
+                0
+            ]
         },
         {
             "nickName": "伊卡洛斯",

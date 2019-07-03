@@ -32,7 +32,7 @@ const db = new (function () {
         let data = this.data
         for (let name of pathArr)
             data[name] && (data = data[name])
-        return data
+        return JSON.stringify(data)
     }
     this.get = (path) => {
         return _get(parsePath(path))
@@ -54,7 +54,7 @@ const db = new (function () {
             const json = JSON.parse(data)
             for (let attr in json) {
                 for (let val of json[attr]) {
-                    this.data.user.push(val)
+                    this.data[attr].push(val)
                 }
             }
         })

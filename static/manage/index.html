@@ -121,11 +121,18 @@
         input.onchange = e => {
             const val = e.target.value
             fetch(parseCmd(val))
-                .then(res => res.json())
-                .then(json => {
+                .then(res => res.text())
+                .then(str => {
                     const ps = []
-                    for (let attr in json) {
-                        ps.push(Body(attr + ` : ${json[attr]}`))
+                    try {
+                        const json = JSON.parse(str)
+                        if (['[object Object]', '[object Array]'].indexOf(Object.prototype.toString.call(json)) < 0)
+                            throw 'type error'
+                        for (let attr in json) {
+                            ps.push(Body(attr + ` : ${json[attr]}`))
+                        }
+                    } catch (e) {
+                        ps.push(Body(str))
                     }
                     history.unshift({ val, ps })
                 })
