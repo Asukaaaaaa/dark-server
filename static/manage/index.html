@@ -103,7 +103,7 @@
 
         const parseCmd = cmd => {
             cmd = cmd.split(' ')
-            const prefix = 'http://localhost/'
+            const prefix = 'http://localhost:8080/'
             switch (cmd[0]) {
                 case 'ls':
                     return prefix + `get?path=${cmd[1]}&type=layer`

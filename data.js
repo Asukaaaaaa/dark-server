@@ -10,7 +10,7 @@ const parsePath = path => {
 const _hash = obj => JSON.stringify(obj)
 
 const db = new (function () {
-    this.data = ['user', 'base', 'order'].reduce((acc, name, i) => {
+    this.data = ['user', 'bases', 'order'].reduce((acc, name, i) => {
         const arr = []
         arr.info = new Map()
         arr.push = val => {
@@ -18,7 +18,27 @@ const db = new (function () {
             let i = arr.info.get(hash)
             if (!i) {
                 i = arr.length + 1
-                Array.prototype.push.call(arr, Object.assign(val, { id: i - 1 }))
+                switch (name) {
+                    case 'user':
+                        records = []
+                        for (let i = 0; i < 10; ++i)
+                            records.push({
+                                time: (new Date()).getTime(),
+                                team: [i % 2],
+                                mvp: i % 2,
+                                scores: [99 - i, 66 + i],
+                                win: true
+                            })
+                        val = Object.assign({
+                            friends: [0, 1],
+                            messages: [],
+                            records
+                        }, val)
+                    default:
+                        val = Object.assign({ id: i - 1 }, val)
+                        break
+                }
+                Array.prototype.push.call(arr, val)
                 arr.info.set(hash, i)
             }
             return i
@@ -30,12 +50,22 @@ const db = new (function () {
     //
     const _get = (pathArr = []) => {
         let data = this.data
-        for (let name of pathArr)
-            data[name] && (data = data[name])
-        return JSON.stringify(data)
+        for (let name of pathArr) {
+            if (data[name])
+                data = data[name]
+            else
+                throw { data, name }
+        }
+        return data
     }
-    this.get = (path) => {
-        return _get(parsePath(path))
+    this.get = path => {
+        let data = null
+        try {
+            data = _get(parsePath(path))
+        } catch (e) {
+
+        }
+        return JSON.stringify(data)
     }
     this.set = (path, val) => {
         pathArr = parsePath(path)
@@ -43,7 +73,13 @@ const db = new (function () {
         obj[pathArr[pathArr.length - 1]] = val
     }
     this.insert = (path, val) => {
-        const arr = this.get(path)
+        let arr
+        try {
+            arr = _get(parsePath(path))
+        } catch (e) {
+            e.data[e.name] = [val]
+            return 0
+        }
         return arr.push(val) - 1
     }
 

@@ -17,7 +17,7 @@ app.use('/static', express.static(__dirname + '/static'))
 // 数据接口
 app.get('/user/login', (req, res) => {
     const uid = db.insert('/user', req.query)
-    res.send({ uid })
+    res.send(db.data.user[uid])
 })
 
 app.get('/get', (req, res) => {
@@ -64,7 +64,7 @@ app.all('/manage/save', (req, res) => {
 })
 
 //
-app.listen(80, () => {
+app.listen(8080, () => {
     const f = () => console.log('i am listening!', ' :', (new Date()).toString().slice(0, 24))
     f()
     setInterval(f, 60000)
